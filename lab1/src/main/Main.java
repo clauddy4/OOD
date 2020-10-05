@@ -7,6 +7,14 @@ import canvas.J2DCanvas;
 import shapes.CircleShape;
 import shapes.RectangleShape;
 import shapes.TriangleShape;
+import decorators.math.MathDecorator;
+import decorators.math.MathDecoratorCircle;
+import decorators.math.MathDecoratorRectangle;
+import decorators.math.MathDecoratorTriangle;
+import decorators.print.PrintDecorator;
+import decorators.print.PrintDecoratorCircle;
+import decorators.print.PrintDecoratorRectangle;
+import decorators.print.PrintDecoratorTriangle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,7 +33,7 @@ public class Main {
     private static final String FRAME_TITLE = "OOD";
 
     public static void main(String[] args) throws IOException {
-        ArrayList<shapes.Shape> shapes = new ArrayList<>();
+        ArrayList<PrintDecorator> shapes = new ArrayList<>();
         final FileReader in = new FileReader(args[0]);
         final FileWriter out = new FileWriter(args[1]);
         try (Scanner scanner = new Scanner(in)) {
@@ -41,12 +49,10 @@ public class Main {
 
                     while (restOfLineScanner.hasNext()) {
                         String pointToken = restOfLineScanner.useDelimiter("=").next();
-                        // TRIANGLE/RECTANGLE point
                         if (pointToken.contains("P") || pointToken.contains("C")) {
                             getPoint(points, restOfLineScanner);
-                        // CIRCLE POINT
                         } else if (pointToken.contains("R")) {
-                            circleRadius = getCircleRadius(circleRadius, restOfLineScanner);
+                            circleRadius = getCircleRadius(restOfLineScanner);
                         }
                     }
                 } catch (Exception ex) {
@@ -82,40 +88,48 @@ public class Main {
         points.add(point);
     }
 
-    private static int getCircleRadius(int circleRadius, Scanner restOfLineScanner) {
+    private static int getCircleRadius(Scanner restOfLineScanner) {
         restOfLineScanner.skip("=");
 
         String stringRadius = restOfLineScanner.useDelimiter(";").next();
         restOfLineScanner.skip(";");
 
-        int radius = Integer.parseInt(stringRadius);
-        circleRadius = radius;
-        return circleRadius;
+        return Integer.parseInt(stringRadius);
     }
 
-    private static void addingNewShape(ArrayList<Shape> shapes, String shapeType, ArrayList<Point> points, int circleRadius) {
+    private static void addingNewShape(ArrayList<PrintDecorator> shapes, String shapeType, ArrayList<Point> points, int circleRadius) {
         switch (shapeType) {
             case "TRIANGLE":
-                Shape triangle = new TriangleShape(points.get(0), points.get(1), points.get(2));
-                triangle = new PrintParameter(triangle);
-                shapes.add(triangle);
+                MathDecorator triangle = new MathDecoratorTriangle(new TriangleShape(), points.get(0), points.get(1), points.get(2));
+                PrintDecorator triangleForResult = new PrintDecoratorTriangle(new TriangleShape(),
+                        points.get(0), points.get(1), points.get(2),
+                        triangle.getPerimeter(),
+                        triangle.getArea());
+                shapes.add(triangleForResult);
                 break;
             case "RECTANGLE":
-                Shape rectangle = new RectangleShape(points.get(0), points.get(1));
-                rectangle = new PrintParameter(rectangle);
-                shapes.add(rectangle);
+                MathDecorator rectangle = new MathDecoratorRectangle(new RectangleShape(), points.get(0), points.get(1));
+                PrintDecorator rectangleForResult = new PrintDecoratorRectangle(new RectangleShape(),
+                        points.get(0), points.get(1),
+                        rectangle.getPerimeter(),
+                        rectangle.getArea());
+                shapes.add(rectangleForResult);
                 break;
             case "CIRCLE":
-                Shape circle = new CircleShape(points.get(0), circleRadius);
-                circle = new PrintParameter(circle);
-                shapes.add(circle);
+                MathDecorator circle = new MathDecoratorCircle(new CircleShape(), circleRadius);
+                PrintDecorator circleForResult = new PrintDecoratorCircle(
+                        new CircleShape(),
+                        points.get(0), circleRadius,
+                        circle.getPerimeter(),
+                        circle.getArea());
+                shapes.add(circleForResult);
                 break;
             default:
                 break;
         }
     }
 
-    private static void startUI(ArrayList<Shape> shapes, FileWriter out) {
+    private static void startUI(ArrayList<PrintDecorator> shapes, FileWriter out) {
         EventQueue.invokeLater(() -> {
             try {
                 J2DCanvas canvas = new J2DCanvas();
@@ -140,7 +154,7 @@ public class Main {
         frame.add(panel);
     }
 
-    private static void draw(List<shapes.Shape> shapes, Canvas canvas, FileWriter out) {
+    private static void draw(List<PrintDecorator> shapes, Canvas canvas, FileWriter out) {
         shapes.forEach(shape -> {
             try {
                 shape.draw(canvas, out);
@@ -150,7 +164,7 @@ public class Main {
         });
     }
 
-    private static void printResult(ArrayList<Shape> shapes, FileWriter out) {
+    private static void printResult(ArrayList<PrintDecorator> shapes, FileWriter out) {
         shapes.forEach(shape -> {
             try {
                 shape.print(out);
