@@ -100,25 +100,36 @@ public class Main {
     private static void addingNewShape(ArrayList<PrintDecorator> shapes, String shapeType, ArrayList<Point> points, int circleRadius) {
         switch (shapeType) {
             case "TRIANGLE":
-                MathDecorator triangle = new MathDecoratorTriangle(new TriangleShape(), points.get(0), points.get(1), points.get(2));
-                PrintDecorator triangleForResult = new PrintDecoratorTriangle(new TriangleShape(),
+                TriangleShape triangleShape = new TriangleShape(points.get(0), points.get(1), points.get(2));
+                MathDecorator triangle = new MathDecoratorTriangle(
+                        triangleShape,
+                        points.get(0), points.get(1), points.get(2));
+                PrintDecorator triangleForResult = new PrintDecoratorTriangle(
+                        triangleShape,
                         points.get(0), points.get(1), points.get(2),
                         triangle.getPerimeter(),
                         triangle.getArea());
                 shapes.add(triangleForResult);
                 break;
             case "RECTANGLE":
-                MathDecorator rectangle = new MathDecoratorRectangle(new RectangleShape(), points.get(0), points.get(1));
-                PrintDecorator rectangleForResult = new PrintDecoratorRectangle(new RectangleShape(),
+                RectangleShape rectangleShape = new RectangleShape(points.get(0), points.get(1));
+                MathDecorator rectangle = new MathDecoratorRectangle(
+                        rectangleShape,
+                        points.get(0), points.get(1));
+                PrintDecorator rectangleForResult = new PrintDecoratorRectangle(
+                        rectangleShape,
                         points.get(0), points.get(1),
                         rectangle.getPerimeter(),
                         rectangle.getArea());
                 shapes.add(rectangleForResult);
                 break;
             case "CIRCLE":
-                MathDecorator circle = new MathDecoratorCircle(new CircleShape(), circleRadius);
+                CircleShape circleShape = new CircleShape(points.get(0), circleRadius);
+                MathDecorator circle = new MathDecoratorCircle(
+                        circleShape,
+                        circleRadius);
                 PrintDecorator circleForResult = new PrintDecoratorCircle(
-                        new CircleShape(),
+                        circleShape,
                         points.get(0), circleRadius,
                         circle.getPerimeter(),
                         circle.getArea());
