@@ -11,10 +11,10 @@ import java.util.Arrays;
 public class PrintDecoratorRectangle extends PrintDecorator {
     private Point mTopLeftVertex;
     private Point mBottomRightVertex;
-    private int perimeter;
-    private int area;
+    private double perimeter;
+    private double area;
 
-    public PrintDecoratorRectangle(Shape shape, Point topLeftVertex, Point bottomRightVertex, int perimeter, int area) {
+    public PrintDecoratorRectangle(Shape shape, Point topLeftVertex, Point bottomRightVertex, double perimeter, double area) {
         super(shape);
         mTopLeftVertex = topLeftVertex;
         mBottomRightVertex = bottomRightVertex;

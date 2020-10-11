@@ -30,15 +30,15 @@ public class MathDecoratorTriangle extends MathDecorator{
     }
 
     @Override
-    public int getPerimeter() {
+    public double getPerimeter() {
         List<Double> edges = getEdges();
-        return (int) (edges.get(0) + edges.get(1) + edges.get(2));
+        return (double) (edges.get(0) + edges.get(1) + edges.get(2));
     }
 
     @Override
-    public int getArea() {
+    public double getArea() {
         List<Double> edges = getEdges();
-        return (int) Math.sqrt(getPerimeter()
+        return (double) Math.sqrt(getPerimeter()
                 * (getPerimeter() - edges.get(0))
                 * (getPerimeter() - edges.get(1))
                 * (getPerimeter() - edges.get(2)));

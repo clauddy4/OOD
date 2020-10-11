@@ -12,10 +12,10 @@ public class PrintDecoratorTriangle extends PrintDecorator{
     private Point mVertex1;
     private Point mVertex2;
     private Point mVertex3;
-    private int perimeter;
-    private int area;
+    private double perimeter;
+    private double area;
 
-    public PrintDecoratorTriangle(Shape shape, Point vertex1, Point vertex2, Point vertex3, int perimeter, int area) {
+    public PrintDecoratorTriangle(Shape shape, Point vertex1, Point vertex2, Point vertex3, double perimeter, double area) {
         super(shape);
         mVertex1 = vertex1;
         mVertex2 = vertex2;

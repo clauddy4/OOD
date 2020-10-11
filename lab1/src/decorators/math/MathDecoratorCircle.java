@@ -5,18 +5,18 @@ import shapes.Shape;
 public class MathDecoratorCircle extends MathDecorator {
     private double mRadius;
 
-    public MathDecoratorCircle(Shape shape, int radius) {
+    public MathDecoratorCircle(Shape shape, double radius) {
         super(shape);
         mRadius = radius;
     }
 
     @Override
-    public int getPerimeter() {
-        return (int) (2 * Math.PI * mRadius);
+    public double getPerimeter() {
+        return (double) (2 * Math.PI * mRadius);
     }
 
     @Override
-    public int getArea() {
-        return (int) (Math.PI * Math.pow(mRadius, 2));
+    public double getArea() {
+        return (double) (Math.PI * Math.pow(mRadius, 2));
     }
 }

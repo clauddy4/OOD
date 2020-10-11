@@ -8,12 +8,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class PrintDecoratorCircle extends PrintDecorator {
-    private int mRadius;
+    private double mRadius;
     private Point mCenter;
-    private int perimeter;
-    private int area;
+    private double perimeter;
+    private double area;
 
-    public PrintDecoratorCircle(Shape shape, Point center, int radius, int perimeter, int area) {
+    public PrintDecoratorCircle(Shape shape, Point center, double radius, double perimeter, double area) {
         super(shape);
         mRadius = radius;
         mCenter = center;
