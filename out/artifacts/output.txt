@@ -3,3 +3,4 @@ Rectangle: P=400; S=10000
 Rectangle: P=400; S=10000
 Rectangle: P=400; S=10000
 Circle: P=502; S=20106
+Circle: P=0; S=0

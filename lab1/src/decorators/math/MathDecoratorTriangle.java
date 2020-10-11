@@ -1,7 +1,7 @@
 package decorators.math;
 
-import main.java.Point;
-import main.java.shapes.Shape;
+import main.Point;
+import shapes.Shape;
 
 import java.util.ArrayList;
 import java.util.List;
