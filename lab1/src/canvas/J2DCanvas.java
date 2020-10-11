@@ -2,6 +2,8 @@ package canvas;
 
 import java.awt.*;
 import main.Point;
+
+import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.*;
@@ -29,6 +31,16 @@ public class J2DCanvas implements Canvas, CanvasPanelDrawable {
         path.closePath();
         AffineTransform transform = AffineTransform.getTranslateInstance(0, 0);
         shapes.add(new ShapeObject(path, fillColor, transform));
+    }
+
+    @Override
+    public void fillPolygon(List<Point> points, int fillColor) {
+
+    }
+
+    @Override
+    public void drawCircle(Point center, double radius, int lineColor) {
+
     }
 
     @Override

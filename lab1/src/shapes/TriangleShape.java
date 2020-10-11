@@ -3,25 +3,25 @@ package shapes;
 import main.Point;
 
 public class TriangleShape implements Shape {
-    private Point mVertex1;
-    private Point mVertex2;
-    private Point mVertex3;
+    private Point vertex1;
+    private Point vertex2;
+    private Point vertex3;
 
     public TriangleShape(Point vertex1, Point vertex2, Point vertex3) {
-        mVertex1 = vertex1;
-        mVertex2 = vertex2;
-        mVertex3 = vertex3;
+        this.vertex1 = vertex1;
+        this.vertex2 = vertex2;
+        this.vertex3 = vertex3;
     }
 
     public Point getVertex1() {
-        return mVertex1;
+        return vertex1;
     }
 
     public Point getVertex2() {
-        return mVertex2;
+        return vertex2;
     }
 
     public Point getVertex3() {
-        return mVertex3;
+        return vertex3;
     }
 }

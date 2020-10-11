@@ -3,20 +3,20 @@ package decorators.math;
 import shapes.Shape;
 
 public class MathDecoratorCircle extends MathDecorator {
-    private double mRadius;
+    private double radius;
 
     public MathDecoratorCircle(Shape shape, double radius) {
         super(shape);
-        mRadius = radius;
+        this.radius = radius;
     }
 
     @Override
     public double getPerimeter() {
-        return (double) (2 * Math.PI * mRadius);
+        return (double) (2 * Math.PI * radius);
     }
 
     @Override
     public double getArea() {
-        return (double) (Math.PI * Math.pow(mRadius, 2));
+        return (double) (Math.PI * Math.pow(radius, 2));
     }
 }

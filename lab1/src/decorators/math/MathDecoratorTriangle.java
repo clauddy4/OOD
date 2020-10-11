@@ -7,22 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MathDecoratorTriangle extends MathDecorator{
-    private Point mVertex1;
-    private Point mVertex2;
-    private Point mVertex3;
+    private Point vertex1;
+    private Point vertex2;
+    private Point vertex3;
 
     public MathDecoratorTriangle(Shape shape, Point vertex1, Point vertex2, Point vertex3) {
         super(shape);
-        mVertex1 = vertex1;
-        mVertex2 = vertex2;
-        mVertex3 = vertex3;
+        this.vertex1 = vertex1;
+        this.vertex2 = vertex2;
+        this.vertex3 = vertex3;
     }
 
     private List<Double> getEdges() {
         ArrayList<Double> set = new ArrayList<>();
-        double edge1 = Math.sqrt(Math.pow(mVertex2.x - mVertex1.x, 2) + Math.pow(mVertex2.y - mVertex1.y, 2));
-        double edge2 = Math.sqrt(Math.pow(mVertex3.x - mVertex2.x, 2) + Math.pow(mVertex3.y - mVertex2.y, 2));
-        double edge3 = Math.sqrt(Math.pow(mVertex1.x - mVertex3.x, 2) + Math.pow(mVertex1.y - mVertex3.y, 2));
+        double edge1 = Math.sqrt(Math.pow(vertex2.x - vertex1.x, 2) + Math.pow(vertex2.y - vertex1.y, 2));
+        double edge2 = Math.sqrt(Math.pow(vertex3.x - vertex2.x, 2) + Math.pow(vertex3.y - vertex2.y, 2));
+        double edge3 = Math.sqrt(Math.pow(vertex1.x - vertex3.x, 2) + Math.pow(vertex1.y - vertex3.y, 2));
         set.add(edge1);
         set.add(edge2);
         set.add(edge3);

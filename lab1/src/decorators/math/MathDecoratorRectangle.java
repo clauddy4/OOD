@@ -4,22 +4,22 @@ import main.Point;
 import shapes.Shape;
 
 public class MathDecoratorRectangle extends MathDecorator {
-    private Point mTopLeftVertex;
-    private Point mBottomRightVertex;
+    private Point topLeftVertex;
+    private Point bottomRightVertex;
 
     public MathDecoratorRectangle(Shape shape, Point topLeftVertex, Point bottomRightVertex) {
         super(shape);
-        mTopLeftVertex = topLeftVertex;
-        mBottomRightVertex = bottomRightVertex;
+        this.topLeftVertex = topLeftVertex;
+        this.bottomRightVertex = bottomRightVertex;
     }
 
     @Override
     public double getPerimeter() {
-        return (double) (2 * (mBottomRightVertex.x - mTopLeftVertex.x + mBottomRightVertex.y - mTopLeftVertex.y));
+        return (double) (2 * (bottomRightVertex.x - topLeftVertex.x + bottomRightVertex.y - topLeftVertex.y));
     }
 
     @Override
     public double getArea() {
-        return (double) ((mBottomRightVertex.x - mTopLeftVertex.x) * (mBottomRightVertex.y - mTopLeftVertex.y));
+        return (double) ((bottomRightVertex.x - topLeftVertex.x) * (bottomRightVertex.y - topLeftVertex.y));
     }
 }

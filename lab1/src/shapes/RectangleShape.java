@@ -3,19 +3,19 @@ package shapes;
 import main.Point;
 
 public class RectangleShape implements Shape {
-    private Point mTopLeftVertex;
-    private Point mBottomRightVertex;
+    private Point topLeftVertex;
+    private Point bottomRightVertex;
 
     public RectangleShape(Point topLeftVertex, Point bottomRightVertex) {
-        mTopLeftVertex = topLeftVertex;
-        mBottomRightVertex = bottomRightVertex;
+        this.topLeftVertex = topLeftVertex;
+        this.bottomRightVertex = bottomRightVertex;
     }
 
     public Point getTopLeftVertex() {
-        return mTopLeftVertex;
+        return topLeftVertex;
     }
 
     public Point getBottomRightVertex() {
-        return mBottomRightVertex;
+        return bottomRightVertex;
     }
 }

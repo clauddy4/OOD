@@ -7,19 +7,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class CircleShape implements Shape {
-    private double mRadius;
-    private Point mCenter;
+    private double radius;
+    private Point center;
 
     public CircleShape(Point center, double radius) {
-        mRadius = radius;
-        mCenter = center;
+        this.radius = radius;
+        this.center = center;
     }
 
     public double getRadius() {
-        return mRadius;
+        return radius;
     }
 
     public Point getCenter() {
-        return mCenter;
+        return center;
     }
 }

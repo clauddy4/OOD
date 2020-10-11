@@ -4,35 +4,32 @@ import main.Point;
 import canvas.Canvas;
 import shapes.Shape;
 
+import java.awt.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 public class PrintDecoratorRectangle extends PrintDecorator {
-    private Point mTopLeftVertex;
-    private Point mBottomRightVertex;
+    private Point topLeftVertex;
+    private Point bottomRightVertex;
     private double perimeter;
     private double area;
 
     public PrintDecoratorRectangle(Shape shape, Point topLeftVertex, Point bottomRightVertex, double perimeter, double area) {
         super(shape);
-        mTopLeftVertex = topLeftVertex;
-        mBottomRightVertex = bottomRightVertex;
+        this.topLeftVertex = topLeftVertex;
+        this.bottomRightVertex = bottomRightVertex;
         this.perimeter = perimeter;
         this.area = area;
     }
 
     @Override
-    public void draw(Canvas canvas, FileWriter out) throws IOException {
-        Point rightTop = new Point(mBottomRightVertex.x, mTopLeftVertex.y);
-        Point leftBottom = new Point(mTopLeftVertex.x, mBottomRightVertex.y);
-        int mOutlineColor = 0;
-        int mFillColor = 0;
-        canvas.drawLine(mTopLeftVertex, rightTop, mOutlineColor);
-        canvas.drawLine(rightTop, mBottomRightVertex, mOutlineColor);
-        canvas.drawLine(mBottomRightVertex, leftBottom, mOutlineColor);
-        canvas.drawLine(leftBottom, mTopLeftVertex, mOutlineColor);
-        canvas.fillPolygon(Arrays.asList(mTopLeftVertex, rightTop, mBottomRightVertex, leftBottom), mFillColor);
+    public void draw(Canvas canvas, FileWriter out) {
+        Point topRightVertex = new Point(bottomRightVertex.x, topLeftVertex.y);
+        Point bottomLeftVertex = new Point(topLeftVertex.x, bottomRightVertex.y);
+        List<Point> points = Arrays.asList(topLeftVertex, topRightVertex, bottomRightVertex, bottomLeftVertex);
+        canvas.drawPolygon(points, Color.BLACK);
     }
 
     @Override

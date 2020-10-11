@@ -7,7 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public abstract class PrintDecorator implements Shape {
-    private Shape shape;
+    protected Shape shape;
 
     PrintDecorator(Shape shape) {
         this.shape = shape;
