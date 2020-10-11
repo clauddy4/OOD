@@ -39,7 +39,7 @@ public class Main {
         try (Scanner scanner = new Scanner(in)) {
             while (scanner.hasNext()) {
                 ArrayList<Point> points = new ArrayList<>();
-                int circleRadius = 0;
+                double circleRadius = 0;
                 String shapeType = getShapeType(scanner);
 
                 scanner.skip(":");
@@ -82,22 +82,22 @@ public class Main {
 
         String[] splitterCoords = stringCoords.split(",");
 
-        int x = Integer.parseInt(splitterCoords[0]);
-        int y = Integer.parseInt(splitterCoords[1]);
+        double x = Double.parseDouble(splitterCoords[0]);
+        double y = Double.parseDouble(splitterCoords[1]);
         Point point = new Point(x, y);
         points.add(point);
     }
 
-    private static int getCircleRadius(Scanner restOfLineScanner) {
+    private static double getCircleRadius(Scanner restOfLineScanner) {
         restOfLineScanner.skip("=");
 
         String stringRadius = restOfLineScanner.useDelimiter(";").next();
         restOfLineScanner.skip(";");
 
-        return Integer.parseInt(stringRadius);
+        return Double.parseDouble(stringRadius);
     }
 
-    private static void addingNewShape(ArrayList<PrintDecorator> shapes, String shapeType, ArrayList<Point> points, int circleRadius) {
+    private static void addingNewShape(ArrayList<PrintDecorator> shapes, String shapeType, ArrayList<Point> points, double circleRadius) {
         switch (shapeType) {
             case "TRIANGLE":
                 TriangleShape triangleShape = new TriangleShape(points.get(0), points.get(1), points.get(2));

@@ -9,7 +9,7 @@ public abstract class MathDecorator implements Shape {
         this.shape = shape;
     }
 
-    public abstract int getPerimeter();
+    public abstract double getPerimeter();
 
-    public abstract int getArea();
+    public abstract double getArea();
 }

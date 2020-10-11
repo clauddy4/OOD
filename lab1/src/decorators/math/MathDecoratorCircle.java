@@ -3,7 +3,7 @@ package decorators.math;
 import shapes.Shape;
 
 public class MathDecoratorCircle extends MathDecorator {
-    private int mRadius;
+    private double mRadius;
 
     public MathDecoratorCircle(Shape shape, int radius) {
         super(shape);
