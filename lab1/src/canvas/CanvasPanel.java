@@ -2,13 +2,17 @@ package canvas;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 
 public class CanvasPanel extends JPanel {
-    private static final int STROKE_WIDTH = 1; // Толщина линии
-    private final CanvasPanelDrawable canvas;
+    private static final int STROKE_WIDTH = 10; // Толщина линии
+    private final transient CanvasPanelDrawable canvas;
 
     public CanvasPanel(CanvasPanelDrawable canvas) {
         this.canvas = canvas;
+        MouseAdapter adapter = canvas.getMouseAdapter(this);
+        addMouseListener(adapter);
+        addMouseMotionListener(adapter);
     }
 
     @Override
