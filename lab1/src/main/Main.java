@@ -1,8 +1,6 @@
 package main;
 
-import shapes.Shape;
 import canvas.Canvas;
-import canvas.CanvasPanel;
 import canvas.J2DCanvas;
 import shapes.CircleShape;
 import shapes.RectangleShape;
@@ -25,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 public class Main {
     private static final int FRAME_WIDTH = 1080;
@@ -82,8 +80,8 @@ public class Main {
 
         String[] splitterCoords = stringCoords.split(",");
 
-        double x = Double.parseDouble(splitterCoords[0]);
-        double y = Double.parseDouble(splitterCoords[1]);
+        int x = Integer.parseInt(splitterCoords[0]);
+        int y = Integer.parseInt(splitterCoords[1]);
         Point point = new Point(x, y);
         points.add(point);
     }
@@ -141,11 +139,10 @@ public class Main {
     }
 
     private static void startUI(ArrayList<PrintDecorator> shapes, FileWriter out) {
-        EventQueue.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> {
             try {
                 J2DCanvas canvas = new J2DCanvas();
-                CanvasPanel panel = new CanvasPanel(canvas);
-                initUI(panel);
+                initUI(canvas);
                 draw(shapes, canvas, out);
                 out.close();
             } catch (IOException e) {
@@ -154,34 +151,32 @@ public class Main {
         });
     }
 
-    private static void initUI(CanvasPanel panel) {
+    private static void initUI(J2DCanvas panel) {
         JFrame frame = new JFrame();
         frame.setTitle(FRAME_TITLE);
-        frame.pack();
-        frame.setLocationByPlatform(true);
-        frame.setSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
-        frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        frame.getContentPane().add(panel);
+        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setVisible(true);
-        frame.add(panel);
     }
 
     private static void draw(List<PrintDecorator> shapes, Canvas canvas, FileWriter out) {
-        shapes.forEach(shape -> {
+        for (PrintDecorator shape : shapes) {
             try {
                 shape.draw(canvas, out);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
-        });
+        }
     }
 
     private static void printResult(ArrayList<PrintDecorator> shapes, FileWriter out) {
-        shapes.forEach(shape -> {
+        for (PrintDecorator shape : shapes) {
             try {
                 shape.print(out);
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
-        });
+        }
     }
 }

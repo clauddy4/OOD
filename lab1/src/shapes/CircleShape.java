@@ -1,10 +1,6 @@
 package shapes;
 
-import canvas.Canvas;
-import main.Point;
-
-import java.io.FileWriter;
-import java.io.IOException;
+import java.awt.*;
 
 public class CircleShape implements Shape {
     private double radius;

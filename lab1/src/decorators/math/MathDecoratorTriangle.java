@@ -1,10 +1,10 @@
 package decorators.math;
 
-import main.Point;
 import shapes.Shape;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.*;
 
 public class MathDecoratorTriangle extends MathDecorator{
     private Point vertex1;

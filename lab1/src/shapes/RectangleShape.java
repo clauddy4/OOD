@@ -1,6 +1,6 @@
 package shapes;
 
-import main.Point;
+import java.awt.*;
 
 public class RectangleShape implements Shape {
     private Point topLeftVertex;

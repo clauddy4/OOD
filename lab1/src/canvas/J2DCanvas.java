@@ -1,7 +1,6 @@
 package canvas;
 
 import java.awt.*;
-import main.Point;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -15,8 +14,15 @@ import static java.awt.Cursor.HAND_CURSOR;
 import static java.awt.event.InputEvent.BUTTON3_DOWN_MASK;
 import static java.awt.event.MouseEvent.BUTTON1;
 
-public class J2DCanvas implements Canvas, CanvasPanelDrawable {
-    private final List<ShapeObject> shapes = new ArrayList<>();
+public class J2DCanvas extends JComponent implements Canvas {
+    private transient List<Item> items;
+
+    public J2DCanvas() {
+        items = new ArrayList<>();
+        DragShape dragShape = new DragShape();
+        addMouseListener(dragShape);
+        addMouseMotionListener(dragShape);
+    }
 
     @Override
     public void drawPolygon(List<Point> points, Color fillColor) {
@@ -30,7 +36,7 @@ public class J2DCanvas implements Canvas, CanvasPanelDrawable {
         }
         path.closePath();
         AffineTransform transform = AffineTransform.getTranslateInstance(0, 0);
-        shapes.add(new ShapeObject(path, fillColor, transform));
+        items.add(new Item(path, fillColor, transform));
     }
 
     @Override
@@ -47,31 +53,30 @@ public class J2DCanvas implements Canvas, CanvasPanelDrawable {
     public void drawCircle(Point center, double radius, Color fillColor) {
         Ellipse2D.Double ellipse = new Ellipse2D.Double(center.x, center.y, radius, radius);
         AffineTransform transform = AffineTransform.getTranslateInstance(0, 0);
-        shapes.add(new ShapeObject(ellipse, fillColor, transform));
+        items.add(new Item(ellipse, fillColor, transform));
     }
 
     @Override
-    public void draw(Graphics2D g2d) {
-        shapes.forEach(shape -> {
+    protected void paintComponent(Graphics g) {
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(0, 0, getWidth(), getHeight());
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        for (Item item : items) {
             AffineTransform saved = g2d.getTransform();
-            g2d.setTransform(shape.transform);
-            g2d.setColor(shape.color);
-            g2d.fill(shape.shape);
+            g2d.transform(item.transform);
+            g2d.setColor(item.color);
+            g2d.fill(item.shape);
             g2d.setTransform(saved);
-        });
+        }
     }
 
-    @Override
-    public MouseAdapter getMouseAdapter(JPanel panel) {
-        return new DragShape(panel);
-    }
-
-    private static class ShapeObject {
-        final java.awt.Shape shape;
-        final Color color;
+    private class Item {
+        Shape shape;
+        Color color;
         AffineTransform transform;
 
-        private ShapeObject(Shape shape, Color color, AffineTransform transform) {
+        Item(Shape shape, Color color, AffineTransform transform) {
             this.shape = shape;
             this.color = color;
             this.transform = transform;
@@ -79,45 +84,53 @@ public class J2DCanvas implements Canvas, CanvasPanelDrawable {
     }
 
     private class DragShape extends MouseAdapter {
-        private final JPanel panel;
-        private ShapeObject hoverShapeObject;
+        private Item hoverItem;
         private boolean isDragging;
-        private java.awt.Point prevPoint;
+        private Point previous;
         private Cursor savedCursor;
-
-        DragShape(JPanel panel) {
-            this.panel = panel;
-        }
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (!isDragging) {
-                return;
-            }
+            if (!isDragging) return;
+
             if ((e.getModifiersEx() & BUTTON3_DOWN_MASK) == 0) {
-                java.awt.Point point = e.getPoint();
+                Point2D point = e.getPoint();
+                Point2D prevPoint = previous;
                 double tx = point.getX() - prevPoint.getX();
                 double ty = point.getY() - prevPoint.getY();
                 AffineTransform transform = AffineTransform.getTranslateInstance(tx, ty);
-                transform.concatenate(hoverShapeObject.transform);
-                hoverShapeObject.transform = transform;
-                panel.repaint();
+                transform.concatenate(hoverItem.transform);
+                hoverItem.transform = transform;
+                repaint();
             }
-            prevPoint = new java.awt.Point(e.getPoint());
+            previous = new Point(e.getPoint());
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            Point2D point = e.getPoint();
+            Item item = findItem(point);
+            if (hoverItem == null && item != null) {
+                savedCursor = getCursor();
+                setCursor(Cursor.getPredefinedCursor(HAND_CURSOR));
+            } else if (hoverItem != null && item == null) {
+                setCursor(savedCursor);
+            }
+            hoverItem = item;
         }
 
         @SuppressWarnings("ConstantConditions")
-        private ShapeObject findItem(Point2D point) {
-            ListIterator<ShapeObject> it = shapes.listIterator(shapes.size());
-            while (it.hasPrevious()) {
-                ShapeObject object = it.previous();
-                AffineTransform transform = object.transform;
-                java.awt.Shape shape = object.shape;
-                Point2D transformedPoint = null;
+        private Item findItem(Point2D point) {
+            // process items in the order reversed to drawing order
+            ListIterator<Item> iter = items.listIterator(items.size());
+            while (iter.hasPrevious()) {
+                Item item = iter.previous();
+                AffineTransform transform = item.transform;
+                Shape shape = item.shape;
+                Point2D transformed = null;
                 try {
-                    if (shape.contains(transform.inverseTransform(point, transformedPoint))) {
-                        return object;
-                    }
+                    if (shape.contains(transform.inverseTransform(point, transformed)))
+                        return item;
                 } catch (NoninvertibleTransformException ignored) {
                     // noop
                 }
@@ -126,23 +139,10 @@ public class J2DCanvas implements Canvas, CanvasPanelDrawable {
         }
 
         @Override
-        public void mouseMoved(MouseEvent e) {
-            java.awt.Point point = e.getPoint();
-            ShapeObject object = findItem(point);
-            if (hoverShapeObject == null && object != null) {
-                savedCursor = panel.getCursor();
-                panel.setCursor(Cursor.getPredefinedCursor(HAND_CURSOR));
-            } else if (hoverShapeObject != null && object == null) {
-                panel.setCursor(savedCursor);
-            }
-            hoverShapeObject = object;
-        }
-
-        @Override
         public void mousePressed(MouseEvent e) {
-            if (e.getButton() == BUTTON1 && !isDragging && hoverShapeObject != null) {
+            if (e.getButton() == BUTTON1 && !isDragging && hoverItem != null) {
                 isDragging = true;
-                prevPoint = new java.awt.Point(e.getPoint());
+                previous = new Point(e.getPoint());
             }
         }
 

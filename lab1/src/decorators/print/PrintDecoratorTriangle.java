@@ -1,6 +1,5 @@
 package decorators.print;
 
-import main.Point;
 import canvas.Canvas;
 import shapes.Shape;
 
