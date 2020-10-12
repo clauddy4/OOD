@@ -1,7 +1,8 @@
 package canvas;
 
 import java.awt.*;
-
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -10,18 +11,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.awt.Cursor.HAND_CURSOR;
 import static java.awt.event.InputEvent.BUTTON3_DOWN_MASK;
 import static java.awt.event.MouseEvent.BUTTON1;
 
 public class J2DCanvas extends JComponent implements Canvas {
     private transient List<Item> items;
+    private boolean selecting = false;
 
     public J2DCanvas() {
         items = new ArrayList<>();
-        DragShape dragShape = new DragShape();
-        addMouseListener(dragShape);
-        addMouseMotionListener(dragShape);
+        MouseAdapter mouseAdapter = new DragShapeAdapter();
+        KeyAdapter keyAdapter = new KeyShapeAdapter();
+        addMouseListener(mouseAdapter);
+        addMouseMotionListener(mouseAdapter);
+        addKeyListener(keyAdapter);
     }
 
     @Override
@@ -61,13 +67,39 @@ public class J2DCanvas extends JComponent implements Canvas {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, getWidth(), getHeight());
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+        int selectionTopLeftX = Integer.MAX_VALUE;
+        int selectionTopLeftY = Integer.MAX_VALUE;
+        int selectionBottomRightX = Integer.MIN_VALUE;
+        int selectionBottomRightY = Integer.MIN_VALUE;
         for (Item item : items) {
             AffineTransform saved = g2d.getTransform();
             g2d.transform(item.transform);
             g2d.setColor(item.color);
             g2d.fill(item.shape);
             g2d.setTransform(saved);
+            if (item.selected) {
+                Rectangle bounds = item.shape.getBounds();
+                Point2D itemTopLeft = item.transform.transform(new Point(bounds.x, bounds.y), null);
+                Point2D itemBottomRight = item.transform.transform(new Point(bounds.x + bounds.width, bounds.y + bounds.height), null);
+                selectionTopLeftX = (int) Math.min(selectionTopLeftX, itemTopLeft.getX());
+                selectionTopLeftY = (int) Math.min(selectionTopLeftY, itemTopLeft.getY());
+                selectionBottomRightX = (int) Math.max(selectionBottomRightX, itemBottomRight.getX());
+                selectionBottomRightY = (int) Math.max(selectionBottomRightY, itemBottomRight.getY());
+            }
+        }
+        if (selectionTopLeftX != 0 &&
+            selectionTopLeftY != 0 &&
+            selectionBottomRightX != 0 &&
+            selectionBottomRightY != 0) {
+            g2d.setColor(Color.BLUE);
+            g2d.setStroke(new BasicStroke(2));
+            g2d.drawRect(
+                selectionTopLeftX - 2,
+                selectionTopLeftY - 2,
+                selectionBottomRightX - selectionTopLeftX + 2,
+                selectionBottomRightY - selectionTopLeftY + 2
+            );
         }
     }
 
@@ -75,6 +107,7 @@ public class J2DCanvas extends JComponent implements Canvas {
         Shape shape;
         Color color;
         AffineTransform transform;
+        boolean selected = false;
 
         Item(Shape shape, Color color, AffineTransform transform) {
             this.shape = shape;
@@ -83,19 +116,34 @@ public class J2DCanvas extends JComponent implements Canvas {
         }
     }
 
-    private class DragShape extends MouseAdapter {
+    private class KeyShapeAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                selecting = true;
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                selecting = false;
+            }
+        }
+    }
+
+    private class DragShapeAdapter extends MouseAdapter {
         private Item hoverItem;
-        private boolean isDragging;
-        private Point previous;
+        private boolean dragging;
+        private Point prevPoint;
         private Cursor savedCursor;
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (!isDragging) return;
+            if (!dragging) return;
 
             if ((e.getModifiersEx() & BUTTON3_DOWN_MASK) == 0) {
                 Point2D point = e.getPoint();
-                Point2D prevPoint = previous;
                 double tx = point.getX() - prevPoint.getX();
                 double ty = point.getY() - prevPoint.getY();
                 AffineTransform transform = AffineTransform.getTranslateInstance(tx, ty);
@@ -103,7 +151,7 @@ public class J2DCanvas extends JComponent implements Canvas {
                 hoverItem.transform = transform;
                 repaint();
             }
-            previous = new Point(e.getPoint());
+            prevPoint = new Point(e.getPoint());
         }
 
         @Override
@@ -140,16 +188,31 @@ public class J2DCanvas extends JComponent implements Canvas {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            if (e.getButton() == BUTTON1 && !isDragging && hoverItem != null) {
-                isDragging = true;
-                previous = new Point(e.getPoint());
+            if (e.getButton() == BUTTON1 && !dragging && hoverItem != null) {
+                dragging = true;
+                prevPoint = new Point(e.getPoint());
+                var found = findItem(e.getPoint());
+                if (found != null && selecting) {
+                    found.selected = !found.selected;
+                } else {
+                    selecting = false;
+                    for (Item item : items) {
+                        item.selected = false;
+                    }
+                }
+            } else {
+                selecting = false;
+                for (Item item : items) {
+                    item.selected = false;
+                }
             }
+            repaint();
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if (e.getButton() == BUTTON1 && isDragging) {
-                isDragging = false;
+            if (e.getButton() == BUTTON1 && dragging) {
+                dragging = false;
             }
         }
     }

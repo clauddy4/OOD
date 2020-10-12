@@ -158,6 +158,7 @@ public class Main {
         frame.getContentPane().add(panel);
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setVisible(true);
+        panel.requestFocus();
     }
 
     private static void draw(List<PrintDecorator> shapes, Canvas canvas, FileWriter out) {
