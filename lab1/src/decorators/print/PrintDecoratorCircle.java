@@ -12,6 +12,7 @@ public class PrintDecoratorCircle extends PrintDecorator {
     private Point center;
     private double perimeter;
     private double area;
+    private Color color = new Color(33, 33, 33);
 
     public PrintDecoratorCircle(Shape shape, Point center, double radius, double perimeter, double area) {
         super(shape);
@@ -23,7 +24,7 @@ public class PrintDecoratorCircle extends PrintDecorator {
 
     @Override
     public void draw(Canvas canvas, FileWriter out) {
-        canvas.drawCircle(center, radius, Color.BLACK);
+        canvas.drawCircle(center, radius, color);
     }
 
     @Override

@@ -33,36 +33,36 @@ public class Main {
     public static void main(String[] args) throws IOException {
         ArrayList<PrintDecorator> shapes = new ArrayList<>();
         final FileReader in = new FileReader(args[0]);
-        final FileWriter out = new FileWriter(args[1]);
-        try (Scanner scanner = new Scanner(in)) {
-            while (scanner.hasNext()) {
-                ArrayList<Point> points = new ArrayList<>();
-                double circleRadius = 0;
-                String shapeType = getShapeType(scanner);
+        try (FileWriter out = new FileWriter(args[1])) {
+            try (Scanner scanner = new Scanner(in)) {
+                while (scanner.hasNext()) {
+                    ArrayList<Point> points = new ArrayList<>();
+                    double circleRadius = 0;
+                    String shapeType = getShapeType(scanner);
 
-                scanner.skip(":");
+                    scanner.skip(":");
 
-                String restOfLine = scanner.useDelimiter("\n").next();
-                try (Scanner restOfLineScanner = new Scanner(restOfLine)) {
-
-                    while (restOfLineScanner.hasNext()) {
-                        String pointToken = restOfLineScanner.useDelimiter("=").next();
-                        if (pointToken.contains("P") || pointToken.contains("C")) {
-                            getPoint(points, restOfLineScanner);
-                        } else if (pointToken.contains("R")) {
-                            circleRadius = getCircleRadius(restOfLineScanner);
+                    String restOfLine = scanner.useDelimiter("\n").next();
+                    try (Scanner restOfLineScanner = new Scanner(restOfLine)) {
+                        while (restOfLineScanner.hasNext()) {
+                            String pointToken = restOfLineScanner.useDelimiter("=").next();
+                            if (pointToken.contains("P") || pointToken.contains("C")) {
+                                getPoint(points, restOfLineScanner);
+                            } else if (pointToken.contains("R")) {
+                                circleRadius = getCircleRadius(restOfLineScanner);
+                            }
                         }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                    addingNewShape(shapes, shapeType, points, circleRadius);
+                    in.close();
                 }
-                addingNewShape(shapes, shapeType, points, circleRadius);
-                in.close();
+                startUI(shapes, out);
+                printResult(shapes, out);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-            startUI(shapes, out);
-            printResult(shapes, out);
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
