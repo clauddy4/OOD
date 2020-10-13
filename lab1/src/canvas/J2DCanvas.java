@@ -25,6 +25,7 @@ public class J2DCanvas extends JComponent implements Canvas {
     private final transient DragShapeAdapter drag = new DragShapeAdapter();
     private transient List<Item> items = new ArrayList<>();
     private boolean selecting = false;
+    private boolean ctrl = false;
     private Point currPoint;
     private Color selectionStrokeColor = new Color(33, 150, 243);
     private Color selectionFillColor = new Color(33, 150, 243, 30);
@@ -122,10 +123,14 @@ public class J2DCanvas extends JComponent implements Canvas {
     private class KeyShapeAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                ctrl = true;
+            }
             if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                 selecting = true;
             }
-            if (selecting && e.getKeyCode() == KeyEvent.VK_G) {
+            if (ctrl && e.getKeyCode() == KeyEvent.VK_G) {
+                System.out.println(ctrl);
                 List<Item> group = items.stream().filter(Item::isSelected).collect(Collectors.toList());
                 items = items.stream().filter(item -> !item.isSelected()).collect(Collectors.toList());
                 CompositeItem composite = new CompositeItem(group);
@@ -133,7 +138,8 @@ public class J2DCanvas extends JComponent implements Canvas {
                 drag.setHoverItem(composite);
                 repaint();
             }
-            if (selecting && e.getKeyCode() == KeyEvent.VK_U) {
+            if (ctrl && e.getKeyCode() == KeyEvent.VK_U) {
+                System.out.println(ctrl);
                 var selected = items.stream().filter(Item::isSelected).findFirst();
                 selected.ifPresent(item -> {
                     item.unselect();
