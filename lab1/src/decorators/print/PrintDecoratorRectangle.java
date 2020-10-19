@@ -14,7 +14,7 @@ public class PrintDecoratorRectangle extends PrintDecorator {
     private Point bottomRightVertex;
     private double perimeter;
     private double area;
-    private Color color = new Color(33, 33, 33);
+    private Color color = new Color(39, 83, 98);
 
     public PrintDecoratorRectangle(Shape shape, Point topLeftVertex, Point bottomRightVertex, double perimeter, double area) {
         super(shape);

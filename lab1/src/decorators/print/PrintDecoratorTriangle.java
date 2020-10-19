@@ -15,7 +15,7 @@ public class PrintDecoratorTriangle extends PrintDecorator {
     private Point vertex3;
     private double perimeter;
     private double area;
-    private Color color = new Color(33, 33, 33);
+    private Color color = new Color(64, 122, 97);
 
     public PrintDecoratorTriangle(Shape shape, Point vertex1, Point vertex2, Point vertex3, double perimeter, double area) {
         super(shape);

@@ -130,7 +130,6 @@ public class J2DCanvas extends JComponent implements Canvas {
                 selecting = true;
             }
             if (ctrl && e.getKeyCode() == KeyEvent.VK_G) {
-                System.out.println(ctrl);
                 List<Item> group = items.stream().filter(Item::isSelected).collect(Collectors.toList());
                 items = items.stream().filter(item -> !item.isSelected()).collect(Collectors.toList());
                 CompositeItem composite = new CompositeItem(group);
@@ -139,7 +138,6 @@ public class J2DCanvas extends JComponent implements Canvas {
                 repaint();
             }
             if (ctrl && e.getKeyCode() == KeyEvent.VK_U) {
-                System.out.println(ctrl);
                 var selected = items.stream().filter(Item::isSelected).findFirst();
                 selected.ifPresent(item -> {
                     item.unselect();
@@ -177,15 +175,14 @@ public class J2DCanvas extends JComponent implements Canvas {
                 return;
             }
 
-            if ((e.getModifiersEx() & BUTTON3_DOWN_MASK) == 0) {
-                Point2D point = e.getPoint();
-                double tx = point.getX() - currPoint.getX();
-                double ty = point.getY() - currPoint.getY();
-                AffineTransform transform = AffineTransform.getTranslateInstance(tx, ty);
-                transform.concatenate(hoverItem.getTransform());
-                hoverItem.setTransform(transform);
-                repaint();
-            }
+            Point2D point = e.getPoint();
+            double tx = point.getX() - currPoint.getX();
+            double ty = point.getY() - currPoint.getY();
+            AffineTransform transform = AffineTransform.getTranslateInstance(tx, ty);
+            transform.concatenate(hoverItem.getTransform());
+            hoverItem.setTransform(transform);
+            repaint();
+
             currPoint = new Point(e.getPoint());
         }
 

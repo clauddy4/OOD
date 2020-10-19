@@ -12,7 +12,7 @@ public class PrintDecoratorCircle extends PrintDecorator {
     private Point center;
     private double perimeter;
     private double area;
-    private Color color = new Color(33, 33, 33);
+    private Color color = new Color(179, 80, 75);
 
     public PrintDecoratorCircle(Shape shape, Point center, double radius, double perimeter, double area) {
         super(shape);
