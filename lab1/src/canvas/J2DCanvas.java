@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.awt.Cursor.HAND_CURSOR;
-import static java.awt.event.InputEvent.BUTTON3_DOWN_MASK;
 import static java.awt.event.MouseEvent.BUTTON1;
 
 public class J2DCanvas extends JComponent implements Canvas {
@@ -174,7 +173,6 @@ public class J2DCanvas extends JComponent implements Canvas {
             if (!dragging) {
                 return;
             }
-
             Point2D point = e.getPoint();
             double tx = point.getX() - currPoint.getX();
             double ty = point.getY() - currPoint.getY();
