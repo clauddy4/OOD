@@ -230,9 +230,9 @@ class Application {
 
     private void initFiguresMenu(JMenuBar menuBar) throws IOException {
         JMenu menu = new JMenu("Add figure");
-        JMenuItem circle = new JMenuItem("Circle", new ImageIcon(getImageResource("./icons/circle.png")));
-        JMenuItem triangle = new JMenuItem("Triangle", new ImageIcon(getImageResource("./icons/triangle.png")));
-        JMenuItem rectangle = new JMenuItem("Rectangle", new ImageIcon(getImageResource("./icons/rectangle.png")));
+        JMenuItem circle = new JMenuItem("Circle", new ImageIcon(getImageResource("icons/circle.png")));
+        JMenuItem triangle = new JMenuItem("Triangle", new ImageIcon(getImageResource("icons/triangle.png")));
+        JMenuItem rectangle = new JMenuItem("Rectangle", new ImageIcon(getImageResource("icons/rectangle.png")));
         menu.add(circle);
         menu.add(triangle);
         menu.add(rectangle);
