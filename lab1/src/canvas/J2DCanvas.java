@@ -21,20 +21,25 @@ import static java.awt.Cursor.HAND_CURSOR;
 import static java.awt.event.MouseEvent.BUTTON1;
 
 public class J2DCanvas extends JComponent implements Canvas {
-    private final transient DragShapeAdapter drag = new DragShapeAdapter();
-    private transient List<Item> items = new ArrayList<>();
+    private final transient DragShapeAdapter dragShapeAdapter = new DragShapeAdapter();
+    private final transient KeyShapeAdapter keyShapeAdapter = new KeyShapeAdapter();
+
+    private transient List<CanvasShape> shapes = new ArrayList<>();
+
     private boolean selecting = false;
     private boolean ctrl = false;
     private Point currPoint;
+
     private Color selectionStrokeColor = new Color(33, 150, 243);
     private Color selectionFillColor = new Color(33, 150, 243, 30);
-    private int selectionWidth = 1;
-    private transient BasicStroke selectionStroke = new BasicStroke(selectionWidth);
+
+    private int selectionStrokeWidth = 1;
+    private transient BasicStroke selectionStroke = new BasicStroke(selectionStrokeWidth);
 
     public J2DCanvas() {
-        addMouseListener(drag);
-        addMouseMotionListener(drag);
-        addKeyListener(new KeyShapeAdapter());
+        addMouseListener(dragShapeAdapter);
+        addMouseMotionListener(dragShapeAdapter);
+        addKeyListener(keyShapeAdapter);
     }
 
     @Override
@@ -49,7 +54,7 @@ public class J2DCanvas extends JComponent implements Canvas {
         }
         path.closePath();
         AffineTransform transform = AffineTransform.getTranslateInstance(0, 0);
-        items.add(new SingleItem(path, fillColor, transform));
+        shapes.add(new SingleCanvasShape(path, fillColor, transform));
     }
 
     @Override
@@ -66,11 +71,11 @@ public class J2DCanvas extends JComponent implements Canvas {
     public void drawCircle(Point center, double radius, Color fillColor) {
         Ellipse2D.Double ellipse = new Ellipse2D.Double(center.x, center.y, radius, radius);
         AffineTransform transform = AffineTransform.getTranslateInstance(0, 0);
-        items.add(new SingleItem(ellipse, fillColor, transform));
+        shapes.add(new SingleCanvasShape(ellipse, fillColor, transform));
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
+    public void paintComponent(Graphics g) {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, getWidth(), getHeight());
         Graphics2D g2d = (Graphics2D) g;
@@ -79,12 +84,12 @@ public class J2DCanvas extends JComponent implements Canvas {
         int selectionTopLeftY = Integer.MAX_VALUE;
         int selectionBottomRightX = Integer.MIN_VALUE;
         int selectionBottomRightY = Integer.MIN_VALUE;
-        for (Item item : items) {
-            item.paint(g2d);
-            if (item.isSelected()) {
-                Rectangle bounds = item.getBounds();
-                Point2D itemTopLeft = item.getTransformedPoint(new Point(bounds.x, bounds.y));
-                Point2D itemBottomRight = item.getTransformedPoint(new Point(bounds.x + bounds.width, bounds.y + bounds.height));
+        for (CanvasShape shape : shapes) {
+            shape.paint(g2d);
+            if (shape.isSelected()) {
+                Rectangle bounds = shape.getBounds();
+                Point2D itemTopLeft = shape.getTransformedPoint(new Point(bounds.x, bounds.y));
+                Point2D itemBottomRight = shape.getTransformedPoint(new Point(bounds.x + bounds.width, bounds.y + bounds.height));
                 selectionTopLeftX = (int) Math.min(selectionTopLeftX, itemTopLeft.getX());
                 selectionTopLeftY = (int) Math.min(selectionTopLeftY, itemTopLeft.getY());
                 selectionBottomRightX = (int) Math.max(selectionBottomRightX, itemBottomRight.getX());
@@ -94,29 +99,34 @@ public class J2DCanvas extends JComponent implements Canvas {
         g2d.setColor(selectionStrokeColor);
         g2d.setStroke(selectionStroke);
         g2d.drawRect(
-                selectionTopLeftX - selectionWidth,
-                selectionTopLeftY - selectionWidth,
-                selectionBottomRightX - selectionTopLeftX + selectionWidth,
-                selectionBottomRightY - selectionTopLeftY + selectionWidth
+                selectionTopLeftX - selectionStrokeWidth,
+                selectionTopLeftY - selectionStrokeWidth,
+                selectionBottomRightX - selectionTopLeftX + selectionStrokeWidth,
+                selectionBottomRightY - selectionTopLeftY + selectionStrokeWidth
         );
         g2d.setColor(selectionFillColor);
         g2d.fillRect(
-                selectionTopLeftX - selectionWidth,
-                selectionTopLeftY - selectionWidth,
-                selectionBottomRightX - selectionTopLeftX + selectionWidth,
-                selectionBottomRightY - selectionTopLeftY + selectionWidth
+                selectionTopLeftX - selectionStrokeWidth,
+                selectionTopLeftY - selectionStrokeWidth,
+                selectionBottomRightX - selectionTopLeftX + selectionStrokeWidth,
+                selectionBottomRightY - selectionTopLeftY + selectionStrokeWidth
         );
     }
 
-    private Item findItem(Point2D point) {
-        ListIterator<Item> iter = items.listIterator(items.size());
+    public CanvasShape findCanvasShape(Point2D point) {
+        ListIterator<CanvasShape> iter = shapes.listIterator(shapes.size());
         while (iter.hasPrevious()) {
-            Item item = iter.previous();
-            if (item.containsPoint(point)) {
-                return item;
+            CanvasShape shape = iter.previous();
+            if (shape.containsPoint(point)) {
+                return shape;
             }
         }
         return null;
+    }
+
+    @Override
+    public List<CanvasShape> getCanvasShapes() {
+        return shapes;
     }
 
     private class KeyShapeAdapter extends KeyAdapter {
@@ -129,23 +139,23 @@ public class J2DCanvas extends JComponent implements Canvas {
                 selecting = true;
             }
             if (ctrl && e.getKeyCode() == KeyEvent.VK_G) {
-                List<Item> group = items.stream().filter(Item::isSelected).collect(Collectors.toList());
-                items = items.stream().filter(item -> !item.isSelected()).collect(Collectors.toList());
-                CompositeItem composite = new CompositeItem(group);
-                items.add(composite);
-                drag.setHoverItem(composite);
+                List<CanvasShape> group = shapes.stream().filter(CanvasShape::isSelected).collect(Collectors.toList());
+                shapes = shapes.stream().filter(item -> !item.isSelected()).collect(Collectors.toList());
+                CompositeCanvasShape composite = new CompositeCanvasShape(group);
+                shapes.add(composite);
+                dragShapeAdapter.setHoverCanvasShape(composite);
                 repaint();
             }
             if (ctrl && e.getKeyCode() == KeyEvent.VK_U) {
-                var selected = items.stream().filter(Item::isSelected).findFirst();
+                var selected = shapes.stream().filter(CanvasShape::isSelected).findFirst();
                 selected.ifPresent(item -> {
                     item.unselect();
-                    item.ungroup(items);
+                    item.ungroup(shapes);
                 });
-                Item hoverItem = findItem(currPoint);
-                if (hoverItem != null) {
-                    hoverItem.select();
-                    drag.setHoverItem(hoverItem);
+                CanvasShape hoverCanvasShape = findCanvasShape(currPoint);
+                if (hoverCanvasShape != null) {
+                    hoverCanvasShape.select();
+                    dragShapeAdapter.setHoverCanvasShape(hoverCanvasShape);
                 }
                 repaint();
             }
@@ -160,12 +170,12 @@ public class J2DCanvas extends JComponent implements Canvas {
     }
 
     private class DragShapeAdapter extends MouseAdapter {
-        private Item hoverItem;
+        private CanvasShape hoverCanvasShape;
         private boolean dragging;
         private Cursor savedCursor;
 
-        void setHoverItem(Item hoverItem) {
-            this.hoverItem = hoverItem;
+        void setHoverCanvasShape(CanvasShape hoverCanvasShape) {
+            this.hoverCanvasShape = hoverCanvasShape;
         }
 
         @Override
@@ -177,8 +187,8 @@ public class J2DCanvas extends JComponent implements Canvas {
             double tx = point.getX() - currPoint.getX();
             double ty = point.getY() - currPoint.getY();
             AffineTransform transform = AffineTransform.getTranslateInstance(tx, ty);
-            transform.concatenate(hoverItem.getTransform());
-            hoverItem.setTransform(transform);
+            transform.concatenate(hoverCanvasShape.getTransform());
+            hoverCanvasShape.setTransform(transform);
             repaint();
 
             currPoint = new Point(e.getPoint());
@@ -187,25 +197,25 @@ public class J2DCanvas extends JComponent implements Canvas {
         @Override
         public void mouseMoved(MouseEvent e) {
             Point2D point = e.getPoint();
-            Item item = findItem(point);
-            if (hoverItem == null && item != null) {
+            CanvasShape shape = findCanvasShape(point);
+            if (hoverCanvasShape == null && shape != null) {
                 savedCursor = getCursor();
                 setCursor(Cursor.getPredefinedCursor(HAND_CURSOR));
-            } else if (hoverItem != null && item == null) {
+            } else if (hoverCanvasShape != null && shape == null) {
                 setCursor(savedCursor);
             }
-            hoverItem = item;
+            hoverCanvasShape = shape;
         }
 
         @Override
         public void mousePressed(MouseEvent e) {
             if (!selecting) {
-                items.forEach(Item::unselect);
+                shapes.forEach(CanvasShape::unselect);
             }
-            if (e.getButton() == BUTTON1 && !dragging && hoverItem != null) {
+            if (e.getButton() == BUTTON1 && !dragging && hoverCanvasShape != null) {
                 dragging = true;
                 currPoint = new Point(e.getPoint());
-                var found = findItem(e.getPoint());
+                var found = findCanvasShape(e.getPoint());
                 if (found != null) {
                     found.select();
                 }

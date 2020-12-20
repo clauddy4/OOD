@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
 
-public class MathDecoratorTriangle extends MathDecorator{
+public class MathDecoratorTriangle extends MathDecorator {
     private Point vertex1;
     private Point vertex2;
     private Point vertex3;

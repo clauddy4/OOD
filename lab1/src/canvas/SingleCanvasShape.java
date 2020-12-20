@@ -6,16 +6,48 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.List;
 
-public class SingleItem implements Item {
+public class SingleCanvasShape implements CanvasShape {
     private boolean selected = false;
     private Shape shape;
+    private Color strokeColor = Color.BLACK;
+    private BasicStroke stroke = new BasicStroke(1);
     private Color color;
     private AffineTransform transform;
 
-    SingleItem(Shape shape, Color color, AffineTransform transform) {
+    SingleCanvasShape(Shape shape, Color color, AffineTransform transform) {
         this.shape = shape;
         this.color = color;
         this.transform = transform;
+    }
+
+    @Override
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    @Override
+    public int getStroke() {
+        return (int) stroke.getLineWidth();
+    }
+
+    @Override
+    public Color getStrokeColor() {
+        return strokeColor;
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public void setStroke(int stroke) {
+        this.stroke = new BasicStroke(stroke);
+    }
+
+    @Override
+    public void setStrokeColor(Color color) {
+        strokeColor = color;
     }
 
     @Override
@@ -24,6 +56,9 @@ public class SingleItem implements Item {
         g2d.transform(transform);
         g2d.setColor(color);
         g2d.fill(shape);
+        g2d.setColor(strokeColor);
+        g2d.setStroke(stroke);
+        g2d.draw(shape);
         g2d.setTransform(saved);
     }
 
@@ -55,11 +90,6 @@ public class SingleItem implements Item {
     }
 
     @Override
-    public Color getColor() {
-        return color;
-    }
-
-    @Override
     public Rectangle getBounds() {
         return shape.getBounds();
     }
@@ -81,7 +111,7 @@ public class SingleItem implements Item {
     }
 
     @Override
-    public void ungroup(List<Item> items) {
+    public void ungroup(List<CanvasShape> canvasShapes) {
 
     }
 }

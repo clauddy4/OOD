@@ -15,7 +15,6 @@ public class PrintDecoratorTriangle extends PrintDecorator {
     private Point vertex3;
     private double perimeter;
     private double area;
-    private Color color = new Color(64, 122, 97);
 
     public PrintDecoratorTriangle(Shape shape, Point vertex1, Point vertex2, Point vertex3, double perimeter, double area) {
         super(shape);
@@ -27,9 +26,9 @@ public class PrintDecoratorTriangle extends PrintDecorator {
     }
 
     @Override
-    public void draw(Canvas canvas, FileWriter out) {
+    public void draw(Canvas canvas) {
         List<Point> points = Arrays.asList(vertex1, vertex2, vertex3);
-        canvas.drawPolygon(points, color);
+        canvas.drawPolygon(points, shape.getColor());
     }
 
     @Override
