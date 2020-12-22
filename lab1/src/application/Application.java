@@ -6,6 +6,7 @@ import canvas.J2DCanvas;
 import command.Command;
 import command.CommandHistory;
 import command.SetStrokeColorCommand;
+import command.SetColorCommand;
 import command.SetThicknessCommand;
 import decorators.math.MathDecorator;
 import decorators.math.MathDecoratorCircle;
@@ -41,7 +42,7 @@ import static javax.swing.JFrame.EXIT_ON_CLOSE;
 public class Application {
     private static final int FRAME_WIDTH = 1280;
     private static final int FRAME_HEIGHT = 720;
-    private static final String FRAME_TITLE = "DashaTheArtist";
+    private static final String FRAME_TITLE = "OOD";
 
     private static Application instance;
 
@@ -378,25 +379,65 @@ public class Application {
         menu.add(green);
         menu.add(black);
         menuBar.add(menu);
+
         red.addActionListener(e -> {
             fillState.setColor(Color.RED);
             state = fillState;
+            for (CanvasShape shape : canvas.getCanvasShapes()) {
+                if (shape.isSelected()) {
+                    var command = new SetColorCommand(shape, Color.RED);
+                    executeCommand(command);
+                }
+            }
+            canvas.repaint();
         });
+
         blue.addActionListener(e -> {
             fillState.setColor(Color.BLUE);
             state = fillState;
+            for (CanvasShape shape : canvas.getCanvasShapes()) {
+                if (shape.isSelected()) {
+                    var command = new SetColorCommand(shape, Color.BLUE);
+                    executeCommand(command);
+                }
+            }
+            canvas.repaint();
         });
+
         yellow.addActionListener(e -> {
             fillState.setColor(Color.YELLOW);
             state = fillState;
+            for (CanvasShape shape : canvas.getCanvasShapes()) {
+                if (shape.isSelected()) {
+                    var command = new SetColorCommand(shape, Color.YELLOW);
+                    executeCommand(command);
+                }
+            }
+            canvas.repaint();
         });
+
         green.addActionListener(e -> {
             fillState.setColor(Color.GREEN);
             state = fillState;
+            for (CanvasShape shape : canvas.getCanvasShapes()) {
+                if (shape.isSelected()) {
+                    var command = new SetColorCommand(shape, Color.GREEN);
+                    executeCommand(command);
+                }
+            }
+            canvas.repaint();
         });
+
         black.addActionListener(e -> {
             fillState.setColor(Color.BLACK);
             state = fillState;
+            for (CanvasShape shape : canvas.getCanvasShapes()) {
+                if (shape.isSelected()) {
+                    var command = new SetColorCommand(shape, Color.BLACK);
+                    executeCommand(command);
+                }
+            }
+            canvas.repaint();
         });
     }
 
